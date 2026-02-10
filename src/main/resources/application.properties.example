@@ -1,0 +1,3 @@
+db.url=DATABASE_URL
+db.username=DATABASE_USERNAME
+db.password=DATABASE_PASSWORD
