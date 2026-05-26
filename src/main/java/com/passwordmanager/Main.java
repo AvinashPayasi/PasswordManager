@@ -13,11 +13,11 @@ public class Main {
         Context context=new Context();
         VaultRepo vaultRepo=new VaultRepo();
         CryptoService cryptoService=new CryptoService();
-        VaultService vaultService=new VaultService(vaultRepo, cryptoService);
+        VaultService vaultService=new VaultService(vaultRepo, cryptoService, context);
         WelcomeState welcomeState=new WelcomeState(context, vaultService);
         StateFactory stateFactory=new  StateFactory();
         stateFactory.setWelcomeState(welcomeState);
-        PasswordManagerApp app=new PasswordManagerApp(stateFactory);
+        PasswordManagerApp app=new PasswordManagerApp(stateFactory, context);
 
         if(Terminal.isTerminal()){
             app.start(welcomeState);

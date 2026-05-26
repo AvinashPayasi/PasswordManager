@@ -4,13 +4,17 @@ import com.passwordmanager.UI.ExitState;
 import com.passwordmanager.UI.State;
 import com.passwordmanager.exceptions.*;
 
+import java.util.InputMismatchException;
+
 public class PasswordManagerApp {
 
     private State currentState;
     private final StateFactory stateFactory;
+    private final Context context;
 
-    public PasswordManagerApp(StateFactory stateFactory){
+    public PasswordManagerApp(StateFactory stateFactory, Context context){
         this.stateFactory=stateFactory;
+        this.context=context;
     }
 
     public void start(State state){
@@ -35,8 +39,12 @@ public class PasswordManagerApp {
                 System.out.println(invalidEmailException.getMessage());
             } catch (UserAccountLockedException userAccountLockedException){
                 System.out.println(userAccountLockedException.getMessage());
+                currentState=stateFactory.getWelcomeState();
             } catch (InvalidCredentialsException invalidCredentialsException){
                 System.out.println(invalidCredentialsException.getMessage());
+            } catch (InputMismatchException inputMismatchException){
+                context.getScanner().nextLine();
+                System.out.println("Enter correct value");
             }
         }
     }
