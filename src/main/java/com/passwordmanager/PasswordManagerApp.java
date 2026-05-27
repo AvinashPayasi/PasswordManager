@@ -1,7 +1,7 @@
 package com.passwordmanager;
 
-import com.passwordmanager.UI.ExitState;
-import com.passwordmanager.UI.State;
+import com.passwordmanager.state.ExitState;
+import com.passwordmanager.state.State;
 import com.passwordmanager.exceptions.*;
 
 import java.util.InputMismatchException;
@@ -45,6 +45,10 @@ public class PasswordManagerApp {
             } catch (InputMismatchException inputMismatchException){
                 context.getScanner().nextLine();
                 System.out.println("Enter correct value");
+            } catch (CredentialsExpiredException credentialsExpiredException){
+                credentialsExpiredException.printStackTrace();
+                System.out.println(credentialsExpiredException.getMessage());
+                currentState=stateFactory.getLogInState();
             }
         }
     }

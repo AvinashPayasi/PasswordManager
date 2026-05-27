@@ -1,10 +1,8 @@
 package com.passwordmanager.UI;
 
 import com.passwordmanager.Context;
-import com.passwordmanager.dto.RegistrationDTO;
+import com.passwordmanager.dto.RegistrationRequest;
 import com.passwordmanager.vaultmetadata.VaultService;
-
-import java.sql.SQLException;
 
 public class RegisterState implements State{
 
@@ -31,7 +29,7 @@ public class RegisterState implements State{
         byte[] password=context.getTerminal().readPasswordBytes();
         System.out.print("Confirm password: ");
         byte[] confirmPassword=context.getTerminal().readPasswordBytes();
-        vaultService.registerUser(new RegistrationDTO(email, password, confirmPassword));
+        vaultService.registerUser(new RegistrationRequest(email, password, confirmPassword));
         System.out.println("User registered successfully");
         return new WelcomeState(context, vaultService);
     }

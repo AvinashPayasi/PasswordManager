@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.sql.*;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class VaultService {
     private final VaultRepo vaultRepo;
@@ -33,15 +34,15 @@ public class VaultService {
             if (vaultRepo.checkUser(connection,registrationRequest.getEmail())) {
                 throw new UserAlreadyExistsException("Email already registered, try login instead");
             }
-            VaultMetaData vaultMetaData = cryptoService.getVaultMetaData(registrationRequest.getEmail(), registrationRequest.getPassword());
-            saveVaultMetaData(connection, registrationRequest.getEmail(), vaultMetaData);
+            RegistrationDetails registrationDetails = cryptoService.getVaultMetaData(registrationRequest.getEmail(), registrationRequest.getPassword());
+            saveVaultMetaData(connection, registrationRequest.getEmail(), registrationDetails);
         }catch (SQLException sqlException){
             throw new InternalServerError("Something went wrong");
         }
     }
 
-    public void saveVaultMetaData(Connection connection,String email, VaultMetaData vaultMetaData) throws SQLException{
-        vaultRepo.saveUser(connection, email, vaultMetaData);
+    public void saveVaultMetaData(Connection connection,String email, RegistrationDetails registrationDetails) throws SQLException{
+        vaultRepo.saveUser(connection, email, registrationDetails);
         connection.commit();
     }
 
@@ -59,6 +60,8 @@ public class VaultService {
             if (!isUserVerified) {
                 throw new InvalidCredentialsException("Email or password is invalid.");
             }
+            loadCurrentUser(logInVerificationDetails.getUserId(), logInRequest.getPassword(), connection);
+            System.out.println("Welcome user with user id "+context.getCurrentUser().getUserId());
         }catch (SQLException sqlException){
             sqlException.printStackTrace();
             throw new InternalServerError("Something went wrong.");
@@ -91,6 +94,12 @@ public class VaultService {
             return true;
         }
         return false;
+    }
+
+    private void loadCurrentUser(UUID userId, byte[] password, Connection connection) throws SQLException{
+        CurrentUserDetails currentUserDetails=vaultRepo.fetchCurrentUserDetails(connection, userId);
+        byte[] dataKey= cryptoService.getDataKey(password, currentUserDetails);
+        context.setCurrentUser(new CurrentUser(userId, dataKey));
     }
 
 }

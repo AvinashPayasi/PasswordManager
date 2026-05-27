@@ -1,9 +1,11 @@
 package com.passwordmanager.cryptography;
 
-import com.passwordmanager.vaultmetadata.VaultMetaData;
+import com.passwordmanager.CurrentUserDetails;
+import com.passwordmanager.exceptions.InternalServerError;
+import com.passwordmanager.vaultmetadata.RegistrationDetails;
 
-import java.time.Instant;
-import java.util.UUID;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 
 public class CryptoService {
     private final CryptoUtil cryptoUtil=new CryptoUtil();
@@ -12,15 +14,31 @@ public class CryptoService {
         return cryptoUtil.genSecretKey(key, salt);
     }
 
-    public VaultMetaData getVaultMetaData(String email, byte[] masterPassword){
+    public RegistrationDetails getVaultMetaData(String email, byte[] password){
         byte[] verificationSalt=cryptoUtil.genSalt();
         byte[] encryptionSalt =cryptoUtil.genSalt();
-        byte[] verificationSecretKey = cryptoUtil.genSecretKey(masterPassword,verificationSalt);
-        byte[] masterKey=cryptoUtil.genSecretKey(masterPassword,encryptionSalt);
+        byte[] verificationSecretKey = cryptoUtil.genSecretKey(password,verificationSalt);
+        byte[] masterKey=cryptoUtil.genSecretKey(password,encryptionSalt);
         byte[] dataKeyIV=cryptoUtil.genIV();
         byte[] dataKey=cryptoUtil.genDataKey();
-        byte[] encryptedDataKey=cryptoUtil.encryptData(masterKey,dataKey,dataKeyIV);
-        VaultMetaData vaultMetaData =new VaultMetaData(verificationSecretKey,verificationSalt,encryptedDataKey,encryptionSalt,dataKeyIV);
-        return vaultMetaData;
+        try {
+            byte[] encryptedDataKey = cryptoUtil.encryptData(masterKey, dataKey, dataKeyIV);
+            RegistrationDetails registrationDetails = new RegistrationDetails(verificationSecretKey, verificationSalt, encryptedDataKey, encryptionSalt, dataKeyIV);
+            return registrationDetails;
+        }catch (GeneralSecurityException generalSecurityException){
+            throw new InternalServerError("Something went wrong");
+        }
+    }
+
+    public byte[] getDataKey(byte[] password, CurrentUserDetails currentUserDetails){
+        byte[] masterKey=cryptoUtil.genSecretKey(password, currentUserDetails.getEncryptionSalt());
+        Arrays.fill(password,(byte)0);
+        try {
+            byte[] dataKey = cryptoUtil.decryptData(masterKey, currentUserDetails.getEncryptedDataKey(), currentUserDetails.getDataKeyIV());
+            currentUserDetails.overwriteSensitiveInfo();
+            return dataKey;
+        }catch (GeneralSecurityException generalSecurityException){
+            throw new InternalServerError("Something went wrong");
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.passwordmanager.cryptography;
 
 import com.passwordmanager.DataBlock;
-import com.passwordmanager.vaultmetadata.VaultMetaData;
+import com.passwordmanager.vaultmetadata.RegistrationDetails;
 import com.passwordmanager.vaultmetadata.VaultService;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
@@ -50,30 +50,12 @@ class CryptoUtil {
         return result;
     }
 
-    public void decryptDataKey(byte[] masterPassword, VaultMetaData vaultMetaData){
-        byte[] encryptedDataKey= vaultMetaData.getEncryptedDataKey();
-        byte[] dataKeyIV= vaultMetaData.getDataKeyIV();
-        byte[] masterKey=genSecretKey(masterPassword, vaultMetaData.getEncryptionSalt());
-        Arrays.fill(masterPassword,(byte)0);
-        byte[] dataKey1=decryptData(masterKey,encryptedDataKey,dataKeyIV);
-        DataKey.setDataKey(dataKey1);
-        Arrays.fill(masterKey,(byte)0);
-        Arrays.fill(dataKeyIV,(byte)0);
-    }
-
-    public DataBlock startEncryption(byte[] plainText){
+    /*public DataBlock startEncryption(byte[] plainText){
         byte[] iv=genIV();
-        byte[] cipherText=encryptData(DataKey.getDataKey(),plainText,iv);
+        byte[] cipherText=encryptData(new byte[16]*//*DataKey.getDataKey()*//*,plainText,iv);
         DataBlock dataBlock=new DataBlock(cipherText, iv);
         return dataBlock;
-    }
-
-    public byte[] startDecryption(DataBlock dataBlock){
-        byte[] iv=dataBlock.getIv();
-        byte[] cipherText=dataBlock.getData();
-        byte[] plainText=decryptData(DataKey.getDataKey(),cipherText,iv);
-        return plainText;
-    }
+    }*/
 
             /*private byte[] deriveSecretKey(byte[] key,byte[] salt,byte[] info){
                 Digest digest=new SHA256Digest();
@@ -118,49 +100,26 @@ class CryptoUtil {
         return builder;
     }
 
-    protected byte[] encryptData(byte[] key, byte[] data, byte[] iv){
+    protected byte[] encryptData(byte[] key, byte[] data, byte[] iv) throws GeneralSecurityException{
         byte[] cipherText=null;
-        try {
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            SecretKey secretKey=toSecretKey(key);
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(128, iv));
-            cipherText = cipher.doFinal(data);
-        }catch(GeneralSecurityException e){
-            e.printStackTrace();
-            return null;
-        }
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        SecretKey secretKey=toSecretKey(key);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(128, iv));
+        cipherText = cipher.doFinal(data);
         return cipherText;
     }
 
-    private byte[] decryptData(byte[] key,byte[] encryptedData, byte[] iv){
+    protected byte[] decryptData(byte[] key,byte[] encryptedData, byte[] iv) throws GeneralSecurityException{
         byte[] data =null;
-        try {
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            SecretKey secretKey=toSecretKey(key);
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(128, iv));
-            data = cipher.doFinal(encryptedData);
-        }catch(GeneralSecurityException e){
-            e.printStackTrace();
-            return null;
-        }
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        SecretKey secretKey=toSecretKey(key);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(128, iv));
+        data = cipher.doFinal(encryptedData);
         return data;
     }
 
-    /*public void startSession(VaultMetaData vaultMetaData){
+    /*public void startSession(RegistrationDetails vaultMetaData){
         vaultMetaData.getEncryptionSalt();
     }*/
 
-    static class DataKey {
-//        private final Scheduler scheduler=new Scheduler();
-        private static byte[] dataKey;
-
-        public static void setDataKey(byte[] dataKey){
-            DataKey.dataKey=dataKey;
-//            scheduler.scheduleSessionKey(dataKey);
-        }
-
-        public static byte[] getDataKey(){
-            return dataKey;
-        }
-    }
 }

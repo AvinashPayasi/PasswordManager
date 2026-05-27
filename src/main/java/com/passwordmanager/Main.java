@@ -1,6 +1,8 @@
 package com.passwordmanager;
 
-import com.passwordmanager.UI.WelcomeState;
+import com.passwordmanager.state.LogInState;
+import com.passwordmanager.state.RegisterState;
+import com.passwordmanager.state.WelcomeState;
 import com.passwordmanager.cryptography.CryptoService;
 import com.passwordmanager.vaultmetadata.VaultRepo;
 import com.passwordmanager.vaultmetadata.VaultService;
@@ -15,8 +17,9 @@ public class Main {
         CryptoService cryptoService=new CryptoService();
         VaultService vaultService=new VaultService(vaultRepo, cryptoService, context);
         WelcomeState welcomeState=new WelcomeState(context, vaultService);
-        StateFactory stateFactory=new  StateFactory();
-        stateFactory.setWelcomeState(welcomeState);
+        RegisterState registerState=new RegisterState(context, vaultService);
+        LogInState logInState=new LogInState(context, vaultService);
+        StateFactory stateFactory=new StateFactory(welcomeState, logInState, registerState);
         PasswordManagerApp app=new PasswordManagerApp(stateFactory, context);
 
         if(Terminal.isTerminal()){
