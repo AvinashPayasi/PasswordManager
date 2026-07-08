@@ -1,6 +1,7 @@
 package com.passwordmanager.cryptography;
 
 import com.passwordmanager.CurrentUserDetails;
+import com.passwordmanager.DataBlock;
 import com.passwordmanager.exceptions.InternalServerError;
 import com.passwordmanager.vaultmetadata.RegistrationDetails;
 
@@ -37,6 +38,17 @@ public class CryptoService {
             byte[] dataKey = cryptoUtil.decryptData(masterKey, currentUserDetails.getEncryptedDataKey(), currentUserDetails.getDataKeyIV());
             currentUserDetails.overwriteSensitiveInfo();
             return dataKey;
+        }catch (GeneralSecurityException generalSecurityException){
+            throw new InternalServerError("Something went wrong");
+        }
+    }
+
+    public DataBlock encryptData(byte[] key, byte[] data){
+        try {
+            byte[] iv = cryptoUtil.genIV();
+            byte[] encryptedData=cryptoUtil.encryptData(key, data, iv);
+            Arrays.fill(data,(byte)0);
+            return new DataBlock(encryptedData,iv);
         }catch (GeneralSecurityException generalSecurityException){
             throw new InternalServerError("Something went wrong");
         }

@@ -1,4 +1,4 @@
-package com.passwordmanager.UI;
+package com.passwordmanager.state;
 
 import com.passwordmanager.Context;
 import com.passwordmanager.dto.RegistrationRequest;
@@ -15,15 +15,15 @@ public class RegisterState implements State{
     }
 
     @Override
-    public State execute(){
+    public States execute(){
         return interactiveMenu();
     }
 
-    private State interactiveMenu(){
+    private States interactiveMenu(){
         System.out.print("Email: ");
         String email=context.getScanner().nextLine();
         if(email.equals(":back")){
-            return new WelcomeState(context, vaultService);
+            return States.WELCOME;
         }
         System.out.print("Password: ");
         byte[] password=context.getTerminal().readPasswordBytes();
@@ -31,6 +31,6 @@ public class RegisterState implements State{
         byte[] confirmPassword=context.getTerminal().readPasswordBytes();
         vaultService.registerUser(new RegistrationRequest(email, password, confirmPassword));
         System.out.println("User registered successfully");
-        return new WelcomeState(context, vaultService);
+        return States.WELCOME;
     }
 }

@@ -1,9 +1,7 @@
-package com.passwordmanager.UI;
+package com.passwordmanager.state;
 
 import com.passwordmanager.Context;
 import com.passwordmanager.vaultmetadata.VaultService;
-
-import java.util.Scanner;
 
 public class WelcomeState implements State{
 
@@ -15,11 +13,11 @@ public class WelcomeState implements State{
         this.vaultService=vaultService;
     }
 
-    public State execute(){
+    public States execute(){
         return menu();
     }
 
-    private State menu(){
+    private States menu(){
         System.out.println("""
                 1. Log in
                 2. Register
@@ -30,24 +28,24 @@ public class WelcomeState implements State{
         return choice(value);
     }
 
-    private State choice(int value){
+    private States choice(int value){
         switch (value){
             case 1 -> {
-                return new LogInState(context, vaultService);
+                return States.LOGIN;
             }
             case 2 -> {
-                return new RegisterState(context, vaultService);
+                return States.REGISTER;
             }
             case 3 -> {
                 System.out.println("Feature not implemented yet");
-                return this;
+                return States.WELCOME;
             }
             case 0 -> {
-                return new ExitState();
+                return States.EXIT;
             }
             default -> {
                 System.out.println("Enter value between 0-2");
-                return this;
+                return States.WELCOME;
             }
         }
     }

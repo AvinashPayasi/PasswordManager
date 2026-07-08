@@ -1,9 +1,9 @@
-package com.passwordmanager.UI;
+package com.passwordmanager.state;
 
 public class ExitState implements State{
 
     @Override
-    public State execute(){
+    public States execute(){
         return null;
     }
 }

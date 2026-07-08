@@ -1,5 +1,5 @@
-package com.passwordmanager.UI;
+package com.passwordmanager.state;
 
 public interface State {
-    public State execute();
+    public States execute();
 }

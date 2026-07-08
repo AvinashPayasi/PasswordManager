@@ -13,7 +13,7 @@ public class DataBlock {
         return data;
     }
 
-    public byte[] getIv() {
+    public byte[] getIV() {
         return iv;
     }
 }

@@ -1,9 +1,9 @@
 package com.passwordmanager;
 
-import com.passwordmanager.state.LogInState;
-import com.passwordmanager.state.RegisterState;
-import com.passwordmanager.state.WelcomeState;
 import com.passwordmanager.cryptography.CryptoService;
+import com.passwordmanager.state.StateFactory;
+import com.passwordmanager.usercredentials.UserCredentialsRepo;
+import com.passwordmanager.usercredentials.UserCredentialsService;
 import com.passwordmanager.vaultmetadata.VaultRepo;
 import com.passwordmanager.vaultmetadata.VaultService;
 
@@ -14,16 +14,15 @@ public class Main {
 
         Context context=new Context();
         VaultRepo vaultRepo=new VaultRepo();
+        UserCredentialsRepo userCredentialsRepo=new UserCredentialsRepo();
         CryptoService cryptoService=new CryptoService();
         VaultService vaultService=new VaultService(vaultRepo, cryptoService, context);
-        WelcomeState welcomeState=new WelcomeState(context, vaultService);
-        RegisterState registerState=new RegisterState(context, vaultService);
-        LogInState logInState=new LogInState(context, vaultService);
-        StateFactory stateFactory=new StateFactory(welcomeState, logInState, registerState);
+        UserCredentialsService userCredentialsService=new UserCredentialsService(userCredentialsRepo,cryptoService);
+        StateFactory stateFactory=new StateFactory(context, vaultService, userCredentialsService);
         PasswordManagerApp app=new PasswordManagerApp(stateFactory, context);
 
         if(Terminal.isTerminal()){
-            app.start(welcomeState);
+            app.start(stateFactory.getWelcomeState());
         }else{
             System.out.println(Style.BOLD_RED+"Switch to terminal for better Security"+Style.RESET);
         }

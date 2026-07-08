@@ -3,6 +3,7 @@ package com.passwordmanager;
 import com.passwordmanager.state.ExitState;
 import com.passwordmanager.state.State;
 import com.passwordmanager.exceptions.*;
+import com.passwordmanager.state.StateFactory;
 
 import java.util.InputMismatchException;
 
@@ -26,7 +27,13 @@ public class PasswordManagerApp {
                     currentState.execute();
                     break;
                 }
-                currentState = currentState.execute();
+                switch(currentState.execute()){
+                    case WELCOME -> currentState=stateFactory.getWelcomeState();
+                    case REGISTER -> currentState=stateFactory.getRegisterState();
+                    case LOGIN -> currentState=stateFactory.getLogInState();
+                    case HOME -> currentState=stateFactory.getHomeState();
+                    case ADD_CREDENTIAL -> currentState=stateFactory.getAddCredentialState();
+                }
             } catch (InternalServerError internalServerError) {
                 currentState=stateFactory.getWelcomeState();
                 System.out.println(internalServerError.getMessage());
