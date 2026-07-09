@@ -5,6 +5,8 @@ import com.passwordmanager.cryptography.CryptoService;
 import com.passwordmanager.dto.LogInRequest;
 import com.passwordmanager.dto.RegistrationRequest;
 import com.passwordmanager.exceptions.*;
+import com.passwordmanager.exceptions.translator.SQLExceptionTranslator;
+
 import java.security.MessageDigest;
 import java.sql.*;
 import java.time.Instant;
@@ -15,12 +17,14 @@ public class VaultService {
     private final VaultRepo vaultRepo;
     private final CryptoService cryptoService;
     private final Context context;
+    private final SQLExceptionTranslator handler;
     private final BruteForceAttackProtector bruteForceAttackProtector= new BruteForceAttackProtector();
 
-    public VaultService(VaultRepo vaultRepo, CryptoService cryptoService, Context context){
+    public VaultService(VaultRepo vaultRepo, CryptoService cryptoService, Context context, SQLExceptionTranslator handler){
         this.vaultRepo = vaultRepo;
         this.cryptoService= cryptoService;
         this.context=context;
+        this.handler=handler;
     }
 
     public void registerUser(RegistrationRequest registrationRequest){
@@ -37,7 +41,7 @@ public class VaultService {
             RegistrationDetails registrationDetails = cryptoService.getVaultMetaData(registrationRequest.getEmail(), registrationRequest.getPassword());
             saveVaultMetaData(connection, registrationRequest.getEmail(), registrationDetails);
         }catch (SQLException sqlException){
-            throw new InternalServerError("Something went wrong");
+            handler.translateException(sqlException);
         }
     }
 
@@ -63,8 +67,7 @@ public class VaultService {
             loadCurrentUser(logInVerificationDetails.getUserId(), logInRequest.getPassword(), connection);
             System.out.println("Welcome user with user id "+context.getCurrentUser().getUserId());
         }catch (SQLException sqlException){
-            sqlException.printStackTrace();
-            throw new InternalServerError("Something went wrong.");
+            handler.translateException(sqlException);
         }
     }
 

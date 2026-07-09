@@ -1,6 +1,7 @@
 package com.passwordmanager;
 
 import com.passwordmanager.cryptography.CryptoService;
+import com.passwordmanager.exceptions.translator.SQLExceptionTranslator;
 import com.passwordmanager.state.StateFactory;
 import com.passwordmanager.usercredentials.UserCredentialsRepo;
 import com.passwordmanager.usercredentials.UserCredentialsService;
@@ -16,8 +17,9 @@ public class Main {
         VaultRepo vaultRepo=new VaultRepo();
         UserCredentialsRepo userCredentialsRepo=new UserCredentialsRepo();
         CryptoService cryptoService=new CryptoService();
-        VaultService vaultService=new VaultService(vaultRepo, cryptoService, context);
-        UserCredentialsService userCredentialsService=new UserCredentialsService(userCredentialsRepo,cryptoService);
+        SQLExceptionTranslator handler=new SQLExceptionTranslator();
+        VaultService vaultService=new VaultService(vaultRepo, cryptoService, context, handler);
+        UserCredentialsService userCredentialsService=new UserCredentialsService(userCredentialsRepo,cryptoService, handler);
         StateFactory stateFactory=new StateFactory(context, vaultService, userCredentialsService);
         PasswordManagerApp app=new PasswordManagerApp(stateFactory, context);
 

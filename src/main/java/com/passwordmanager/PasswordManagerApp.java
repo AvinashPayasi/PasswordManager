@@ -4,9 +4,6 @@ import com.passwordmanager.state.ExitState;
 import com.passwordmanager.state.State;
 import com.passwordmanager.exceptions.*;
 import com.passwordmanager.state.StateFactory;
-import com.passwordmanager.state.WelcomeState;
-
-import java.util.InputMismatchException;
 
 public class PasswordManagerApp {
 
@@ -52,9 +49,6 @@ public class PasswordManagerApp {
                         currentState = stateFactory.getAddCredentialState();
                     }
                 }
-            } catch (InternalServerError internalServerError) {
-                currentState = previousState;
-                System.out.println(internalServerError.getMessage());
             } catch (PasswordMismatchException passwordMismatchException) {
                 System.out.println(passwordMismatchException.getMessage());
             } catch (UserAlreadyExistsException userAlreadyExistsException) {
@@ -83,6 +77,19 @@ public class PasswordManagerApp {
             }catch(ExitCommandException exitCommandException){
                 context.logOut();
                 currentState=new ExitState();
+            }catch(IllegalStateException illegalStateException){
+                System.out.println(illegalStateException.getMessage());
+                currentState=new ExitState();
+            }catch (InternalServerError internalServerError) {
+                currentState = previousState;
+                System.out.println(internalServerError.getMessage());
+            } catch (DatabaseConfigurationException databaseConfigurationException){
+                currentState=new ExitState();
+                System.out.println(databaseConfigurationException.getMessage());
+            } catch (DuplicateCredentialException duplicateCredentialException){
+                previousState = stateFactory.getHomeState();
+                currentState = stateFactory.getHomeState();
+                System.out.println(duplicateCredentialException.getMessage());
             }
         }
     }

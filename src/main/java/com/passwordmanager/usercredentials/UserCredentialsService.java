@@ -3,22 +3,22 @@ package com.passwordmanager.usercredentials;
 import com.passwordmanager.*;
 import com.passwordmanager.cryptography.CryptoService;
 import com.passwordmanager.exceptions.InvalidEmailException;
-import com.passwordmanager.vaultmetadata.VaultService;
+import com.passwordmanager.exceptions.translator.SQLExceptionTranslator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.UUID;
 
 public class UserCredentialsService {
-    private Scanner scanner;
-    private UserCredentialsRepo userCredentialsRepo;
-    private CryptoService cryptoService;
+    private final UserCredentialsRepo userCredentialsRepo;
+    private final CryptoService cryptoService;
+    private final SQLExceptionTranslator handler;
 
-    public UserCredentialsService(UserCredentialsRepo userCredentialsRepo, CryptoService cryptoService){//, CryptoUtil cryptoUtil){
+    public UserCredentialsService(UserCredentialsRepo userCredentialsRepo, CryptoService cryptoService, SQLExceptionTranslator handler){//, CryptoUtil cryptoUtil){
         this.userCredentialsRepo = userCredentialsRepo;
         this.cryptoService=cryptoService;
+        this.handler=handler;
     }
 
     private Connection getConnection() throws SQLException {
@@ -40,8 +40,8 @@ public class UserCredentialsService {
             UserCredentials userCredentials=new UserCredentials(userId, addCredentialRequest, dataBlock);
             userCredentialsRepo.saveUserCredentials(connection,userCredentials);
             connection.commit();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException sqlException) {
+            handler.translateException(sqlException);
         }
     }
 
