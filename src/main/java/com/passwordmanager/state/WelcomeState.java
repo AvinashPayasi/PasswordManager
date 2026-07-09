@@ -23,9 +23,8 @@ public class WelcomeState implements State{
                 2. Register
                 3. Forget password""");
         System.out.print("Enter value: ");
-        int value=context.getScanner().nextInt();
-        context.getScanner().nextLine();
-        return choice(value);
+        String  value=context.getInputUtil().readLine();
+        return choice(Integer.valueOf(value));
     }
 
     private States choice(int value){
@@ -40,11 +39,8 @@ public class WelcomeState implements State{
                 System.out.println("Feature not implemented yet");
                 return States.WELCOME;
             }
-            case 0 -> {
-                return States.EXIT;
-            }
             default -> {
-                System.out.println("Enter value between 0-2");
+                System.out.println("Enter value between 1-2");
                 return States.WELCOME;
             }
         }

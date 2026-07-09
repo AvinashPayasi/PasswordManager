@@ -21,10 +21,7 @@ public class RegisterState implements State{
 
     private States interactiveMenu(){
         System.out.print("Email: ");
-        String email=context.getScanner().nextLine();
-        if(email.equals(":back")){
-            return States.WELCOME;
-        }
+        String email=context.getInputUtil().readLine();
         System.out.print("Password: ");
         byte[] password=context.getTerminal().readPasswordBytes();
         System.out.print("Confirm password: ");

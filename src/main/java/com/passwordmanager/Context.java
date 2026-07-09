@@ -4,12 +4,12 @@ import java.util.Scanner;
 
 public class Context {
 
-    private final Scanner scanner=new Scanner(System.in);
+    private final InputUtil inputUtil=new InputUtil();
     private final Terminal terminal=new Terminal();
     private CurrentUser currentUser;
 
-    public Scanner getScanner(){
-        return scanner;
+    public InputUtil getInputUtil(){
+        return inputUtil;
     }
 
     public Terminal getTerminal(){
@@ -22,5 +22,12 @@ public class Context {
 
     public CurrentUser getCurrentUser() {
         return currentUser;
+    }
+
+    public void logOut(){
+        if(currentUser!=null) {
+            currentUser.destroy();
+            currentUser=null;
+        }
     }
 }

@@ -28,9 +28,8 @@ public class HomeState implements State {
                 4. Edit credential
                 5. Delete credential""");
         System.out.print("Enter value: ");
-        int value=context.getScanner().nextInt();
-        context.getScanner().nextLine();
-        return choice(value);
+        String value=context.getInputUtil().readLine();
+        return choice(Integer.valueOf(value));
     }
 
     private States choice(int value){
@@ -42,11 +41,8 @@ public class HomeState implements State {
             case 3 -> {}
             case 4 -> {}
             case 5 -> {}
-            case 0 -> {
-                return States.EXIT;
-            }
             default -> {
-                System.out.println("Enter value between 0-5");
+                System.out.println("Enter value between 1-5");
                 return States.HOME;
             }
         }

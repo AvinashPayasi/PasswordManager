@@ -28,18 +28,15 @@ public class AddCredentialState implements State {
 
     private States interactiveMenu(){
         System.out.print("Website: ");
-        String website=context.getScanner().nextLine();
+        String website=context.getInputUtil().readLine();
         System.out.print("Username(enter ':skip' to skip) : ");
-        String username=context.getScanner().nextLine();
+        String username=context.getInputUtil().readLine();
         System.out.print("Email: ");
-        String email=context.getScanner().nextLine();
-         if(email.equals(":back")){
-            return States.HOME;
-        }
+        String email=context.getInputUtil().readLine();
         System.out.print("Password: ");
         byte[] password=context.getTerminal().readPasswordBytes();
         System.out.print("Keyword: ");
-        String keyword=context.getScanner().nextLine();
+        String keyword=context.getInputUtil().readLine();
         AddCredentialRequest addCredentialRequest=new AddCredentialRequest(website, username, email, password, keyword);
         userCredentialsService.saveUserCredentials(context.getCurrentUser().getUserId(), context.getCurrentUser().getDataKey(), addCredentialRequest);
         return States.HOME;

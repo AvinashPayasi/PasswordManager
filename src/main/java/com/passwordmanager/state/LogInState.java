@@ -25,10 +25,7 @@ public class LogInState implements State{
 
     public States interactiveMenu(){
         System.out.print("Email: ");
-        String email= context.getScanner().nextLine();
-        if(email.equals(":back")){
-            return States.WELCOME;
-        }
+        String email= context.getInputUtil().readLine();
         System.out.print("Password: ");
         byte[] password=context.getTerminal().readPasswordBytes();
         vaultService.logInUser(new LogInRequest(email, password));
