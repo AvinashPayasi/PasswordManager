@@ -15,7 +15,7 @@ public class InputUtil {
 
         switch (input){
             case ":back" -> throw new BackCommandException();
-            case ":logout" ->{
+            case ":logout" -> {
                 throw new LogOutCommandException();
             }
             case ":exit" -> {

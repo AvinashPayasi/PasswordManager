@@ -53,4 +53,15 @@ public class CryptoService {
             throw new InternalServerError("Something went wrong");
         }
     }
+
+    public byte[] decryptData(byte[] key,DataBlock dataBlock){
+        try{
+            byte[] encryptedData = dataBlock.getData();
+            byte[] iv = dataBlock.getIV();
+            byte[] password=cryptoUtil.decryptData(key, encryptedData, iv);
+            return password;
+        }catch (GeneralSecurityException generalSecurityException){
+            throw new InternalServerError("Something went wrong");
+        }
+    }
 }

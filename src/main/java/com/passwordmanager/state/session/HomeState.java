@@ -22,11 +22,8 @@ public class HomeState implements State {
 
     private States menu(){
         System.out.println("""
-                1. Show credential
-                2. Add credential
-                3. Show credentials list
-                4. Edit credential
-                5. Delete credential""");
+                1. Add credential
+                2. Show credential""");
         System.out.print("Enter value: ");
         String value=context.getInputUtil().readLine();
         return choice(Integer.valueOf(value));
@@ -34,19 +31,17 @@ public class HomeState implements State {
 
     private States choice(int value){
         switch (value){
-            case 1 -> {}
-            case 2 -> {
+            case 1 -> {
                 return States.ADD_CREDENTIAL;
             }
-            case 3 -> {}
-            case 4 -> {}
-            case 5 -> {}
+            case 2 -> {
+                return States.SHOW_CREDENTIAL;
+            }
             default -> {
-                System.out.println("Enter value between 1-5");
+                System.out.println("Enter 1 or 2 only");
                 return States.HOME;
             }
         }
-        return null;
     }
 }
 

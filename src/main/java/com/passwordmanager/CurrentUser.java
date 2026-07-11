@@ -1,6 +1,6 @@
 package com.passwordmanager;
 
-import com.passwordmanager.exceptions.CredentialsExpiredException;
+import com.passwordmanager.exceptions.SessionExpiredException;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -30,7 +30,7 @@ public class CurrentUser {
 
     public boolean isSessionNonExpired(){
         if(Instant.now().isAfter(sessionExpiry)){
-            throw new CredentialsExpiredException("Session Expired, Login again");
+            throw new SessionExpiredException("Session Expired, Login again");
         }
         return true;
     }

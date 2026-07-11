@@ -19,7 +19,7 @@ public class Main {
         CryptoService cryptoService=new CryptoService();
         SQLExceptionTranslator handler=new SQLExceptionTranslator();
         VaultService vaultService=new VaultService(vaultRepo, cryptoService, context, handler);
-        UserCredentialsService userCredentialsService=new UserCredentialsService(userCredentialsRepo,cryptoService, handler);
+        UserCredentialsService userCredentialsService=new UserCredentialsService(userCredentialsRepo,cryptoService, context ,handler);
         StateFactory stateFactory=new StateFactory(context, vaultService, userCredentialsService);
         PasswordManagerApp app=new PasswordManagerApp(stateFactory, context);
 

@@ -11,12 +11,10 @@ public class LogInState implements State{
 
     private final Context context;
     private final VaultService vaultService;
-    private final UserCredentialsService userCredentialsService;
 
-    public LogInState(Context context, VaultService vaultService, UserCredentialsService userCredentialsService){
+    public LogInState(Context context, VaultService vaultService){
         this.context=context;
         this.vaultService=vaultService;
-        this.userCredentialsService=userCredentialsService;
     }
 
     public States execute(){

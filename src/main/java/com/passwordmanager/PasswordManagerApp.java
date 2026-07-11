@@ -48,6 +48,10 @@ public class PasswordManagerApp {
                         previousState = stateFactory.getHomeState();
                         currentState = stateFactory.getAddCredentialState();
                     }
+                    case SHOW_CREDENTIAL -> {
+                        previousState = stateFactory.getHomeState();
+                        currentState = stateFactory.getShowCredentialState();
+                    }
                 }
             } catch (PasswordMismatchException passwordMismatchException) {
                 System.out.println(passwordMismatchException.getMessage());
@@ -63,7 +67,7 @@ public class PasswordManagerApp {
                 System.out.println(invalidCredentialsException.getMessage());
             } catch (NumberFormatException numberFormatException) {
                 System.out.println("Enter correct value");
-            } catch (CredentialsExpiredException credentialsExpiredException) {
+            } catch (SessionExpiredException credentialsExpiredException) {
                 context.logOut();
                 previousState = stateFactory.getWelcomeState();
                 currentState = stateFactory.getLogInState();
@@ -90,6 +94,10 @@ public class PasswordManagerApp {
                 previousState = stateFactory.getHomeState();
                 currentState = stateFactory.getHomeState();
                 System.out.println(duplicateCredentialException.getMessage());
+            } catch (CredentialNotFoundException credentialNotFoundException){
+                previousState=stateFactory.getHomeState();
+                currentState=stateFactory.getHomeState();
+                System.out.println(credentialNotFoundException.getMessage());
             }
         }
     }

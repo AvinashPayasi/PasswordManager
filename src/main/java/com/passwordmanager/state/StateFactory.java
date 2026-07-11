@@ -17,6 +17,7 @@ public class StateFactory {
     private LogInState logInState;
     private HomeState homeState;
     private AddCredentialState addCredentialState;
+    private ShowCredentialState showCredentialState;
 
     public StateFactory(Context context, VaultService vaultService, UserCredentialsService userCredentialsService){
         this.context=context;
@@ -40,22 +41,29 @@ public class StateFactory {
 
     public LogInState getLogInState() {
         if(logInState==null){
-            return new LogInState(context, vaultService, userCredentialsService);
+            return new LogInState(context, vaultService);
         }
         return logInState;
     }
 
     public HomeState getHomeState(){
         if(homeState==null){
-            return new HomeState(context, userCredentialsService);
+            homeState=new HomeState(context, userCredentialsService);
         }
         return homeState;
     }
 
     public AddCredentialState getAddCredentialState(){
         if(addCredentialState==null){
-            return new AddCredentialState(context, userCredentialsService);
+            addCredentialState= new AddCredentialState(context, userCredentialsService);
         }
         return addCredentialState;
+    }
+
+    public ShowCredentialState getShowCredentialState() {
+        if(showCredentialState==null){
+            showCredentialState= new ShowCredentialState(context,userCredentialsService);
+        }
+        return showCredentialState;
     }
 }

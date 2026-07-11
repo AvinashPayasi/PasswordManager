@@ -2,6 +2,11 @@ package com.passwordmanager.usercredentials;
 
 import com.passwordmanager.*;
 import com.passwordmanager.cryptography.CryptoService;
+import com.passwordmanager.dto.CredentialEntity;
+import com.passwordmanager.dto.CredentialResponse;
+import com.passwordmanager.dto.CredentialSummary;
+import com.passwordmanager.exceptions.CredentialNotFoundException;
+import com.passwordmanager.exceptions.InternalServerError;
 import com.passwordmanager.exceptions.InvalidEmailException;
 import com.passwordmanager.exceptions.translator.SQLExceptionTranslator;
 
@@ -13,11 +18,14 @@ import java.util.UUID;
 public class UserCredentialsService {
     private final UserCredentialsRepo userCredentialsRepo;
     private final CryptoService cryptoService;
+    private final Context context;
     private final SQLExceptionTranslator handler;
 
-    public UserCredentialsService(UserCredentialsRepo userCredentialsRepo, CryptoService cryptoService, SQLExceptionTranslator handler){//, CryptoUtil cryptoUtil){
+
+    public UserCredentialsService(UserCredentialsRepo userCredentialsRepo, CryptoService cryptoService, Context context, SQLExceptionTranslator handler){//, CryptoUtil cryptoUtil){
         this.userCredentialsRepo = userCredentialsRepo;
         this.cryptoService=cryptoService;
+        this.context=context;
         this.handler=handler;
     }
 
@@ -37,8 +45,8 @@ public class UserCredentialsService {
             addCredentialRequest.setKeyword(keyword);
             addCredentialRequest.setEmail(email);
             DataBlock dataBlock=cryptoService.encryptData(key, addCredentialRequest.getPassword());
-            UserCredentials userCredentials=new UserCredentials(userId, addCredentialRequest, dataBlock);
-            userCredentialsRepo.saveUserCredentials(connection,userCredentials);
+            CredentialEntity credentialEntity=new CredentialEntity(userId, addCredentialRequest, dataBlock);
+            userCredentialsRepo.saveUserCredentials(connection,credentialEntity);
             connection.commit();
         } catch (SQLException sqlException) {
             handler.translateException(sqlException);
@@ -61,6 +69,41 @@ public class UserCredentialsService {
         return email1;
     }
 
+    public List<CredentialSummary> fetchCredentialList(String searchValue){
+        try(Connection connection=DatabaseConfig.getConnection()){
+            String value=searchValue.trim();
+            UUID userID=context.getCurrentUser().getUserId();
+            List<CredentialSummary> credentials=userCredentialsRepo.fetchCredentialsList(connection, userID, value);
+            if(credentials.isEmpty()){
+                throw new CredentialNotFoundException("No result found");
+            }
+            return credentials;
+        }catch (SQLException sqlException){
+            sqlException.printStackTrace();
+            throw new InternalServerError("Something went wrong");
+        }
+    }
+
+    public CredentialResponse fetchUserCredential(int credentialID){
+        try(Connection connection=DatabaseConfig.getConnection()) {
+            CredentialResponse credentialResponse=userCredentialsRepo.fetchUserCredential(connection, credentialID, context.getCurrentUser().getUserId());
+            return credentialResponse;
+        }catch (SQLException sqlException){
+            sqlException.printStackTrace();
+            throw new InternalServerError("Something went wrong");
+        }
+    }
+
+    public byte[] fetchPassword(int credentialID){
+        try(Connection connection=DatabaseConfig.getConnection()){
+            DataBlock dataBlock=userCredentialsRepo.fetchDataBlock(connection, credentialID, context.getCurrentUser().getUserId());
+            byte[] password=cryptoService.decryptData(context.getCurrentUser().getDataKey(),dataBlock);
+            return password;
+        }catch (SQLException sqlException){
+            sqlException.printStackTrace();
+            throw new InternalServerError("Something went wrong");
+        }
+    }
 
     /*public CredentialOperations deleteSavedCredentials(String username){
         try(Connection connection = getConnection()){
@@ -81,7 +124,7 @@ public class UserCredentialsService {
         }
     }*/
 
-    public CredentialOperations deleteDetails(String email, String keyword){
+    /*public CredentialOperations deleteDetails(String email, String keyword){
         Connection connection=null;
         try{
             connection=getConnection();
@@ -108,13 +151,13 @@ public class UserCredentialsService {
                 return CredentialOperations.UNKNOWN;
             }
         }
-    }
+    }*/
 
-    public UserDetailsResponse accessDetails(String value){
+    /*public UserDetailsResponse accessDetails(String value){
         Connection connection=null;
         try{
             connection=getConnection();
-            List<UserCredentials> userDetails= null;//userCredentialsRepo.selectDetails(connection,value);
+            List<UserCredentialResponse> userDetails= null;//userCredentialsRepo.selectDetails(connection,value);
             connection.commit();
             if(userDetails.isEmpty()){
                 return new UserDetailsResponse(CredentialOperations.NO_USER);
@@ -139,16 +182,16 @@ public class UserCredentialsService {
                 }
             }
         }
-    }
+    }*/
 
-    public CredentialOperations accessPassword(UserCredentials userCredentials){
+   /* public CredentialOperations accessPassword(UserCredentialResponse userCredentials){
         Connection connection=null;
         try {
             connection = getConnection();
-            userCredentialsRepo.selectUserCredentials(connection, userCredentials);
+            userCredentialsRepo.fetchUserCredentials(connection, userCredentials);
            // DataBlock dataBlock = userCredentials.getEncryptionInfo(true);
             //byte[] password = cryptoUtil.startDecryption(dataBlock);
-            /* Fake data added during refactor */ byte[] password=new byte[]{1,2,3};
+            *//* Fake data added during refactor *//* byte[] password=new byte[]{1,2,3};
             //userCredentials.setPassword(password);
             connection.commit();
             return CredentialOperations.OPERATION_SUCCESSFUL;
@@ -171,5 +214,5 @@ public class UserCredentialsService {
                 }
             }
         }
-    }
+    }*/
 }

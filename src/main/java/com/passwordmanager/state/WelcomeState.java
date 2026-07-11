@@ -1,6 +1,7 @@
 package com.passwordmanager.state;
 
 import com.passwordmanager.Context;
+import com.passwordmanager.Style;
 import com.passwordmanager.vaultmetadata.VaultService;
 
 public class WelcomeState implements State{
