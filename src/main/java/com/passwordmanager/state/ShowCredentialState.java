@@ -111,11 +111,13 @@ public class ShowCredentialState implements State{
     }
 
     private void revealPassword(){
+        System.out.println("\033[?1049h");
         byte[] password = userCredentialsService.fetchPassword(searchSession.getCurrentCredentialID());
         formatter.formatCredentialWithPassword(searchSession.getCredential(), password, context.getTerminal());
-        System.out.print("Press [enter] to continue: ");
         Arrays.fill(password, (byte) 0);
-        //System.out.println("\033[?1049l");
+        System.out.print("Press [enter] to continue: ");
+        context.getInputUtil().waitForEnter();
+        System.out.println("\033[?1049l");
     }
 
 

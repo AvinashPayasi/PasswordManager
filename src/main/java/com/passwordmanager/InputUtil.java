@@ -24,4 +24,8 @@ public class InputUtil {
         }
         return input;
     }
+
+    public void waitForEnter(){
+        scanner.nextLine();
+    }
 }
