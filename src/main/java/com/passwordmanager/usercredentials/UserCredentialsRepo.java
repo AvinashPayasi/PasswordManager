@@ -123,37 +123,19 @@ public class UserCredentialsRepo {
         }
     }
 
-    public void eraseUserCredentials(Connection connection,UUID user_id) throws SQLException{
-        PreparedStatement preparedStatement=connection.prepareStatement("DELETE FROM user_credentials where user_id=?");
-        preparedStatement.setObject(1,user_id);
-        preparedStatement.executeUpdate();
-    }
-
-    /*public List<UserCredentialResponse> selectDetails(Connection connection, String value) throws SQLException{
-        PreparedStatement preparedStatement=connection.prepareStatement("SELECT username, email, tag, keyword, website FROM user_credentials WHERE keyword=? OR tag=? FOR UPDATE");
-        preparedStatement.setString(1, value);
-        preparedStatement.setString(2, value);
-        ResultSet resultSet= preparedStatement.executeQuery();
-        List<UserCredentialResponse> userDetails=new ArrayList<>();
-        while(resultSet.next()){
-            String username=resultSet.getString("username");
-            String email=resultSet.getString("email");
-            String tag=resultSet.getString("tag");
-            String keyword=resultSet.getString("keyword");
-            String website=resultSet.getString("website");
-            userDetails.add(new UserCredentialResponse(username,email, tag, keyword, website));
+    public void deleteCredential(Connection connection, UUID userID, int credentialID) throws SQLException{
+        try(PreparedStatement statement=connection.prepareStatement("DELETE FROM user_credentials WHERE user_id=? AND credential_id=?")){
+            statement.setObject(1, userID);
+            statement.setInt(2, credentialID);
+            int deletedRows=statement.executeUpdate();
+            if(deletedRows==1){}
+            else if(deletedRows==0){
+                throw new CredentialNotFoundException("No credential found");
+            }else{
+                connection.rollback();
+                throw new InternalServerError("Something went wrong");
+            }
         }
-        resultSet.close();
-        preparedStatement.close();
-        return userDetails;
-    }*/
-
-    public int deleteDetails(Connection connection, String email, String keyword) throws SQLException{
-        PreparedStatement preparedStatement=connection.prepareStatement("DELETE FROM user_credentials WHERE email=? AND keyword=?");
-        preparedStatement.setString(1,email);
-        preparedStatement.setString(2,keyword);
-        int deletedRows=preparedStatement.executeUpdate();
-        return deletedRows;
     }
 
 }

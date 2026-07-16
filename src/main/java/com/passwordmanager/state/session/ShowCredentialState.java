@@ -103,8 +103,7 @@ public class ShowCredentialState implements State {
             switch (value) {
                 case 1 -> revealPassword();
                 case 2 -> editCredentials();
-                case 3 -> {
-                }
+                case 3 -> deleteCredential();
             }
         } catch (BackCommandException backCommandException) {
             view = CredentialView.RESULTS;
@@ -134,7 +133,7 @@ public class ShowCredentialState implements State {
             String email = skippableInput();
             System.out.print("Keyword: ");
             String keyword = skippableInput();
-            System.out.print("Edit password(y/n): ");
+            System.out.print("Edit password(y/N): ");
             String editPassword = context.getInputUtil().readLine();
             EditCredentialRequest request;
             if (editPassword.equalsIgnoreCase("y")) {
@@ -176,5 +175,19 @@ public class ShowCredentialState implements State {
             return null;
         }
         return value;
+    }
+
+    private void deleteCredential(){
+        try {
+            System.out.print("Are you sure you want to delete this credential? This action cannot be undone(y/N): ");
+            String deleteCredential = context.getInputUtil().readLine();
+            if (deleteCredential.equalsIgnoreCase("y")) {
+                userCredentialsService.deleteCredential(searchSession.getCurrentCredentialID());
+                System.out.println("Credential deleted successfully");
+                fetchCredentials(searchSession.getSearchedValue());
+            }
+        }catch (BackCommandException backCommandException){
+            view = CredentialView.CREDENTIAL;
+        }
     }
 }

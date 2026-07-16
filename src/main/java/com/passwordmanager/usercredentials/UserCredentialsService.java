@@ -116,4 +116,13 @@ public class UserCredentialsService {
             throw handler.translate(sqlException);
         }
     }
+
+    public void deleteCredential(int credentialID){
+        try(Connection connection= DatabaseConfig.getConnection()){
+            userCredentialsRepo.deleteCredential(connection, context.getCurrentUser().getUserId(), credentialID);
+            connection.commit();
+        }catch (SQLException sqlException){
+            throw handler.translate(sqlException);
+        }
+    }
 }
