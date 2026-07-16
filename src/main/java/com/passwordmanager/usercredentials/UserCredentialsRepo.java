@@ -5,6 +5,7 @@ import com.passwordmanager.dto.CredentialEntity;
 import com.passwordmanager.dto.CredentialResponse;
 import com.passwordmanager.dto.CredentialSummary;
 import com.passwordmanager.exceptions.CredentialNotFoundException;
+import com.passwordmanager.exceptions.InternalServerError;
 
 import java.sql.*;
 import java.time.Instant;
@@ -89,13 +90,37 @@ public class UserCredentialsRepo {
             statement.setObject(1, userID);
             statement.setInt(2, credentialID);
             try(ResultSet resultSet=statement.executeQuery()){
-                resultSet.next();
-                byte[] data= resultSet.getBytes("encrypted_password");
-                byte[] iv= resultSet.getBytes("iv");
-                dataBlock=new DataBlock(data, iv);
+                if(resultSet.next()) {
+                    byte[] data = resultSet.getBytes("encrypted_password");
+                    byte[] iv = resultSet.getBytes("iv");
+                    dataBlock = new DataBlock(data, iv);
+                }else {
+                    throw new InternalServerError("Something went wrong");
+                }
             }
         }
         return dataBlock;
+    }
+
+    public void updateCredential(Connection connection, CredentialEntity entity, Instant time , int credentialID) throws SQLException{
+        try(PreparedStatement statement= connection.prepareStatement("UPDATE user_credentials SET username=COALESCE(?,username), email=COALESCE(?,email), encrypted_password=COALESCE(?,encrypted_password), iv=COALESCE(?,iv), keyword=COALESCE(?,keyword), website=COALESCE(?,website), updated_at=? WHERE user_id=? AND credential_id=?" )){
+            statement.setString(1, entity.getUsername());
+            statement.setString(2, entity.getEmail());
+            statement.setObject(3, entity.getEncryptedData());
+            statement.setObject(4, entity.getDataIV());
+            statement.setString(5, entity.getKeyword());
+            statement.setString(6, entity.getWebsite());
+            statement.setTimestamp(7, Timestamp.from(time));
+            statement.setObject(8, entity.getUserID());
+            statement.setObject(9, credentialID);
+            int updatedRows = statement.executeUpdate();
+            if(updatedRows==1){}
+            else if(updatedRows==0){
+                throw new CredentialNotFoundException("No credential found");
+            }else{
+                throw new InternalServerError("Something went wrong");
+            }
+        }
     }
 
     public void eraseUserCredentials(Connection connection,UUID user_id) throws SQLException{

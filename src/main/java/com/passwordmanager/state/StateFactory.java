@@ -3,6 +3,7 @@ package com.passwordmanager.state;
 import com.passwordmanager.Context;
 import com.passwordmanager.state.session.AddCredentialState;
 import com.passwordmanager.state.session.HomeState;
+import com.passwordmanager.state.session.ShowCredentialState;
 import com.passwordmanager.usercredentials.UserCredentialsService;
 import com.passwordmanager.vaultmetadata.VaultService;
 
@@ -27,21 +28,21 @@ public class StateFactory {
 
     public RegisterState getRegisterState() {
         if(registerState==null){
-            return new RegisterState(context, vaultService);
+            registerState = new RegisterState(context, vaultService);
         }
         return registerState;
     }
 
     public WelcomeState getWelcomeState() {
         if(welcomeState==null){
-            return new WelcomeState(context, vaultService);
+            welcomeState = new WelcomeState(context, vaultService);
         }
         return welcomeState;
     }
 
     public LogInState getLogInState() {
         if(logInState==null){
-            return new LogInState(context, vaultService);
+            logInState = new LogInState(context, vaultService);
         }
         return logInState;
     }

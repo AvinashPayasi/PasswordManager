@@ -10,8 +10,10 @@ public class SearchSession {
     private List<CredentialSummary> credentials;
     private int currentCredentialID;
     private CredentialResponse currentCredential;
+    private String searchedValue;
 
-    public SearchSession(List<CredentialSummary> credentials){
+    public SearchSession(String searchedValue, List<CredentialSummary> credentials){
+        this.searchedValue=searchedValue;
         this.credentials=credentials;
     }
 
@@ -33,5 +35,13 @@ public class SearchSession {
 
     public void setCredential(CredentialResponse credential){
         this.currentCredential=credential;
+    }
+
+    public String getSearchedValue() {
+        return searchedValue;
+    }
+
+    public void setSearchedValue(String searchedValue) {
+        this.searchedValue = searchedValue;
     }
 }

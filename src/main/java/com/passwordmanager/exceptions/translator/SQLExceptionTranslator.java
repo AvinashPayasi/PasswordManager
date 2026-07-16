@@ -8,16 +8,16 @@ import java.sql.SQLException;
 
 public class SQLExceptionTranslator {
 
-    public void translateException(SQLException sqlException){
-        switch (sqlException.getSQLState()){
-            case "28P01" -> throw new DatabaseConfigurationException("Invalid database Password");
-            case "28000" -> throw new DatabaseConfigurationException("Username not specified");
-            case "30000" -> throw new DatabaseConfigurationException("Database didn't exist");
-            case "08001" -> throw new DatabaseConfigurationException("Incorrect database URL");
-            case "42P01" -> throw new DatabaseConfigurationException("Relation didn't exist");
-            case "23505" -> throw new DuplicateCredentialException("Credentials already exists, try update or add new credential");
-            case "08004" -> throw new DatabaseConfigurationException("Database connection rejected");
-            default -> throw new InternalServerError("Something went wrong");
-        }
+    public RuntimeException translate(SQLException sqlException){
+        return switch (sqlException.getSQLState()){
+            case "28P01" ->  new DatabaseConfigurationException("Invalid database Password");
+            case "28000" ->  new DatabaseConfigurationException("Username not specified");
+            case "30000" ->  new DatabaseConfigurationException("Database didn't exist");
+            case "08001" ->  new DatabaseConfigurationException("Incorrect database URL");
+            case "42P01" ->  new DatabaseConfigurationException("Relation didn't exist");
+            case "23505" ->  new DuplicateCredentialException("Credentials already exists, try update or add new credential");
+            case "08004" ->  new DatabaseConfigurationException("Database connection rejected");
+            default ->  new InternalServerError("Something went wrong");
+        };
     }
 }

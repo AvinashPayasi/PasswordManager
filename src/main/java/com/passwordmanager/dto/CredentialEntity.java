@@ -1,8 +1,6 @@
 package com.passwordmanager.dto;
 
-import com.passwordmanager.AddCredentialRequest;
 import com.passwordmanager.DataBlock;
-
 import java.util.UUID;
 
 public class CredentialEntity {
@@ -13,12 +11,12 @@ public class CredentialEntity {
     private final String website;
     private final DataBlock dataBlock;
 
-    public CredentialEntity(UUID userID, AddCredentialRequest addCredentialRequest, DataBlock dataBlock){
+    public CredentialEntity(UUID userID, String username, String website, String email, String keyword, DataBlock dataBlock){
         this.userID=userID;
-        this.username= addCredentialRequest.getUsername();
-        this.email=addCredentialRequest.getEmail();
-        this.website=addCredentialRequest.getWebsite();
-        this.keyword=addCredentialRequest.getKeyword();
+        this.username= username;
+        this.email=email;
+        this.website=website;
+        this.keyword=keyword;
         this.dataBlock=dataBlock;
     }
 

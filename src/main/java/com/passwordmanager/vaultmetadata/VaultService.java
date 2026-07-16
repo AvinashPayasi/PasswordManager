@@ -41,7 +41,7 @@ public class VaultService {
             RegistrationDetails registrationDetails = cryptoService.getVaultMetaData(registrationRequest.getEmail(), registrationRequest.getPassword());
             saveVaultMetaData(connection, registrationRequest.getEmail(), registrationDetails);
         }catch (SQLException sqlException){
-            handler.translateException(sqlException);
+            throw handler.translate(sqlException);
         }
     }
 
@@ -67,7 +67,7 @@ public class VaultService {
             loadCurrentUser(logInVerificationDetails.getUserId(), logInRequest.getPassword(), connection);
             System.out.println("Welcome user with user id "+context.getCurrentUser().getUserId());
         }catch (SQLException sqlException){
-            handler.translateException(sqlException);
+            throw handler.translate(sqlException);
         }
     }
 
@@ -91,7 +91,7 @@ public class VaultService {
         }
     }
 
-    private boolean verifyPassword(byte[] verificationSecretKey, byte[] verificationSalt, byte[] password) throws SQLException{
+    private boolean verifyPassword(byte[] verificationSecretKey, byte[] verificationSalt, byte[] password){
         byte[] tempSecretKey=cryptoService.deriveSecretKey(password, verificationSalt);
         if(MessageDigest.isEqual(verificationSecretKey, tempSecretKey)){
             return true;
@@ -106,4 +106,3 @@ public class VaultService {
     }
 
 }
-
