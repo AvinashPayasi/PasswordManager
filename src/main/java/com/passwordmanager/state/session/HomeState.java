@@ -1,7 +1,6 @@
 package com.passwordmanager.state.session;
 
 import com.passwordmanager.Context;
-import com.passwordmanager.state.ExitState;
 import com.passwordmanager.state.State;
 import com.passwordmanager.state.States;
 import com.passwordmanager.usercredentials.UserCredentialsService;
@@ -23,7 +22,8 @@ public class HomeState implements State {
     private States menu(){
         System.out.println("""
                 1. Add credential
-                2. Show credential""");
+                2. Search credentials
+                3. Show all credentials""");
         System.out.print("Enter value: ");
         String value=context.getInputUtil().readLine();
         return choice(Integer.valueOf(value));
@@ -35,10 +35,13 @@ public class HomeState implements State {
                 return States.ADD_CREDENTIAL;
             }
             case 2 -> {
-                return States.SHOW_CREDENTIAL;
+                return States.SEARCH_CREDENTIAL;
+            }
+            case 3 -> {
+                return States.SHOW_ALL_CREDENTIALS;
             }
             default -> {
-                System.out.println("Enter 1 or 2 only");
+                System.out.println("Enter value between 1 and 3 only");
                 return States.HOME;
             }
         }

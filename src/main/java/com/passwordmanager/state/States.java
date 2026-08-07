@@ -6,6 +6,7 @@ public enum States {
     REGISTER,
     WELCOME,
     ADD_CREDENTIAL,
-    SHOW_CREDENTIAL,
+    SEARCH_CREDENTIAL,
+    SHOW_ALL_CREDENTIALS,
     EXIT
 }

@@ -138,4 +138,25 @@ public class UserCredentialsRepo {
         }
     }
 
+    public List<CredentialSummary> fetchAllCredentials(Connection connection, UUID userID) throws SQLException{
+        try(PreparedStatement statement=connection.prepareStatement("SELECT credential_id, username, email, website, keyword FROM user_credentials WHERE user_id=?")){
+            statement.setObject(1, userID);
+            try(ResultSet resultSet=statement.executeQuery()){
+
+                List<CredentialSummary> credentials=new ArrayList<>();
+
+                while(resultSet.next()){
+                    int credentialID=resultSet.getInt("credential_id");
+                    String username=resultSet.getString("username");
+                    String email=resultSet.getString("email");
+                    String website=resultSet.getString("website");
+                    String keyword=resultSet.getString("keyword");
+                    CredentialSummary credential=new CredentialSummary(credentialID,username,email,website,keyword);
+                    credentials.add(credential);
+                }
+                return credentials;
+            }
+        }
+    }
+
 }

@@ -1,9 +1,11 @@
 package com.passwordmanager.state;
 
 import com.passwordmanager.Context;
+import com.passwordmanager.CredentialExplorer;
 import com.passwordmanager.state.session.AddCredentialState;
 import com.passwordmanager.state.session.HomeState;
-import com.passwordmanager.state.session.ShowCredentialState;
+import com.passwordmanager.state.session.SearchCredentialState;
+import com.passwordmanager.state.session.ShowAllCredentialsState;
 import com.passwordmanager.usercredentials.UserCredentialsService;
 import com.passwordmanager.vaultmetadata.VaultService;
 
@@ -12,18 +14,21 @@ public class StateFactory {
     private final Context context;
     private final VaultService vaultService;
     private final UserCredentialsService userCredentialsService;
+    private final CredentialExplorer credentialExplorer;
 
     private RegisterState registerState;
     private WelcomeState welcomeState;
     private LogInState logInState;
     private HomeState homeState;
     private AddCredentialState addCredentialState;
-    private ShowCredentialState showCredentialState;
+    private SearchCredentialState searchCredentialState;
+    private ShowAllCredentialsState showAllCredentialsState;
 
-    public StateFactory(Context context, VaultService vaultService, UserCredentialsService userCredentialsService){
+    public StateFactory(Context context, VaultService vaultService, UserCredentialsService userCredentialsService, CredentialExplorer credentialExplorer){
         this.context=context;
         this.vaultService=vaultService;
         this.userCredentialsService=userCredentialsService;
+        this.credentialExplorer=credentialExplorer;
     }
 
     public RegisterState getRegisterState() {
@@ -61,10 +66,17 @@ public class StateFactory {
         return addCredentialState;
     }
 
-    public ShowCredentialState getShowCredentialState() {
-        if(showCredentialState==null){
-            showCredentialState= new ShowCredentialState(context,userCredentialsService);
+    public SearchCredentialState getSearchCredentialState() {
+        if(searchCredentialState ==null){
+            searchCredentialState = new SearchCredentialState(context,userCredentialsService, credentialExplorer);
         }
-        return showCredentialState;
+        return searchCredentialState;
+    }
+
+    public ShowAllCredentialsState getShowAllCredentialsState(){
+        if(showAllCredentialsState==null){
+            showAllCredentialsState=new ShowAllCredentialsState(context, userCredentialsService, credentialExplorer);
+        }
+        return showAllCredentialsState;
     }
 }

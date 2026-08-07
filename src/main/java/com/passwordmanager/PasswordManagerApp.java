@@ -48,9 +48,13 @@ public class PasswordManagerApp {
                         previousState = stateFactory.getHomeState();
                         currentState = stateFactory.getAddCredentialState();
                     }
-                    case SHOW_CREDENTIAL -> {
+                    case SEARCH_CREDENTIAL -> {
                         previousState = stateFactory.getHomeState();
-                        currentState = stateFactory.getShowCredentialState();
+                        currentState = stateFactory.getSearchCredentialState();
+                    }
+                    case SHOW_ALL_CREDENTIALS -> {
+                        previousState = stateFactory.getHomeState();
+                        currentState = stateFactory.getShowAllCredentialsState();
                     }
                 }
             } catch (PasswordMismatchException passwordMismatchException) {

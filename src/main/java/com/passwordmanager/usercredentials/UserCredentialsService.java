@@ -125,4 +125,16 @@ public class UserCredentialsService {
             throw handler.translate(sqlException);
         }
     }
+
+    public List<CredentialSummary> fetchAllCredentials(){
+        try(Connection connection=DatabaseConfig.getConnection()) {
+            List<CredentialSummary> credentials=userCredentialsRepo.fetchAllCredentials(connection, context.getCurrentUser().getUserId());
+            if(credentials.isEmpty()){
+                throw new CredentialNotFoundException("No credential found");
+            }
+            return credentials;
+        }catch (SQLException sqlException){
+            throw handler.translate(sqlException);
+        }
+    }
 }

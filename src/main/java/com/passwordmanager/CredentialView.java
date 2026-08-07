@@ -1,6 +1,6 @@
 package com.passwordmanager;
 
 public enum CredentialView {
-    RESULTS,
+    CREDENTIAL_LIST,
     CREDENTIAL,
 }

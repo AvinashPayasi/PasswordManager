@@ -5,16 +5,23 @@ import com.passwordmanager.dto.CredentialSummary;
 
 import java.util.List;
 
-public class SearchSession {
+public class CredentialSession {
 
     private List<CredentialSummary> credentials;
     private int currentCredentialID;
     private CredentialResponse currentCredential;
+    private ViewMode viewMode;
     private String searchedValue;
 
-    public SearchSession(String searchedValue, List<CredentialSummary> credentials){
-        this.searchedValue=searchedValue;
+    public CredentialSession(List<CredentialSummary> credentials, ViewMode viewMode){
         this.credentials=credentials;
+        this.viewMode=viewMode;
+    }
+
+    public CredentialSession(List<CredentialSummary> credentials, ViewMode viewMode, String searchedValue){
+        this.credentials=credentials;
+        this.viewMode=viewMode;
+        this.searchedValue=searchedValue;
     }
 
     public List<CredentialSummary> getCredentials() {
@@ -41,7 +48,7 @@ public class SearchSession {
         return searchedValue;
     }
 
-    public void setSearchedValue(String searchedValue) {
-        this.searchedValue = searchedValue;
+    public ViewMode getViewMode(){
+        return viewMode;
     }
 }

@@ -4,12 +4,11 @@ import com.passwordmanager.Terminal;
 import com.passwordmanager.dto.CredentialResponse;
 import com.passwordmanager.dto.CredentialSummary;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class UserCredentialsFormatter {
+public class CredentialFormatter {
 
     private final DateTimeFormatter dateTimeFormatter=DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm z").withZone(ZoneId.systemDefault());
 
@@ -44,6 +43,7 @@ public class UserCredentialsFormatter {
     }
 
     public void formatCredentialWithPassword(CredentialResponse credentialResponse, byte[] password, Terminal terminal){
+        System.out.println("\033[?1049h");
         System.out.println("--"+credentialResponse.getWebsite()+"--------------------------");
         System.out.print("Username: ");
         if(credentialResponse.getUsername()!=null) {
@@ -61,6 +61,8 @@ public class UserCredentialsFormatter {
             System.out.println("Never");
         }
         System.out.println();
+        System.out.print("Press [enter] to continue: ");
+
     }
 
 }
