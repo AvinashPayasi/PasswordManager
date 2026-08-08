@@ -5,7 +5,7 @@ import com.passwordmanager.dto.CredentialSummary;
 import com.passwordmanager.dto.EditCredentialRequest;
 import com.passwordmanager.exceptions.BackCommandException;
 import com.passwordmanager.exceptions.InvalidEmailException;
-import com.passwordmanager.usercredentials.CredentialFormatter;
+import com.passwordmanager.usercredentials.ConsoleFormatter;
 import com.passwordmanager.usercredentials.UserCredentialsService;
 
 import java.util.Arrays;
@@ -14,15 +14,13 @@ import java.util.List;
 public class CredentialExplorer {
 
     private final UserCredentialsService userCredentialsService;
-    private CredentialFormatter credentialFormatter;
     private Context context;
 
     private CredentialSession credentialSession;
     private CredentialView view;
 
-    public CredentialExplorer(UserCredentialsService userCredentialsService, CredentialFormatter credentialFormatter, Context context){
+    public CredentialExplorer(UserCredentialsService userCredentialsService, Context context){
         this.userCredentialsService=userCredentialsService;
-        this.credentialFormatter=credentialFormatter;
         this.context=context;
     }
 
@@ -47,7 +45,7 @@ public class CredentialExplorer {
 
     private void displayCredentialList(){
         credentialSession.getCredentials();
-        credentialFormatter.formatCredentialsList(credentialSession.getCredentials());
+        ConsoleFormatter.formatCredentialsList(credentialSession.getCredentials());
         selectCredentialID();
     }
 
@@ -77,7 +75,7 @@ public class CredentialExplorer {
     }
 
     private void displayCredential(){
-        credentialFormatter.formatCredential(credentialSession.getCredential());
+        ConsoleFormatter.formatCredential(credentialSession.getCredential());
     }
 
     private int credentialMenu() {
@@ -118,10 +116,9 @@ public class CredentialExplorer {
 
     private void revealPassword() {
         byte[] password = userCredentialsService.fetchPassword(credentialSession.getCurrentCredentialID());
-        credentialFormatter.formatCredentialWithPassword(credentialSession.getCredential(), password, context.getTerminal());
+        ConsoleFormatter.formatCredentialWithPassword(credentialSession.getCredential(), password, context.getTerminal());
         Arrays.fill(password, (byte) 0);
         context.getInputUtil().waitForEnter();
-        System.out.println("\033[?1049l");
     }
 
     private void editCredential() {

@@ -36,6 +36,10 @@ public class PasswordManagerApp {
                         previousState = stateFactory.getWelcomeState();
                         currentState = stateFactory.getRegisterState();
                     }
+                    case FORGET -> {
+                        previousState = stateFactory.getWelcomeState();
+                        currentState = stateFactory.getForgetPassState();
+                    }
                     case LOGIN -> {
                         previousState = stateFactory.getWelcomeState();
                         currentState = stateFactory.getLogInState();
@@ -102,6 +106,16 @@ public class PasswordManagerApp {
                 previousState=stateFactory.getHomeState();
                 currentState=stateFactory.getHomeState();
                 System.out.println(credentialNotFoundException.getMessage());
+            } catch (InvalidRecoveryKeyException invalidRecoveryKeyException){
+                previousState=stateFactory.getWelcomeState();
+                currentState=stateFactory.getWelcomeState();
+                context.deleteForgetPasswordSession();
+                System.out.println(invalidRecoveryKeyException.getMessage());
+            } catch (EmailNotFoundException emailNotFoundException){
+                previousState=stateFactory.getWelcomeState();
+                currentState=stateFactory.getWelcomeState();
+                context.deleteForgetPasswordSession();
+                System.out.println(emailNotFoundException.getMessage());
             }
         }
     }

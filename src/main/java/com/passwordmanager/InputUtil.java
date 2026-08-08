@@ -25,7 +25,19 @@ public class InputUtil {
         return input;
     }
 
+    public void readSavedRecoveryKey(){
+        while(true){
+            System.out.print("> ");
+            String input=scanner.nextLine().trim().toLowerCase();
+            if(input.equals(":saved")){
+                break;
+            }
+        }
+        System.out.println("\033[?1049l");
+    }
+
     public void waitForEnter(){
         scanner.nextLine();
+        System.out.println("\033[?1049l");
     }
 }

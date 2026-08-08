@@ -37,11 +37,10 @@ public class WelcomeState implements State{
                 return States.REGISTER;
             }
             case 3 -> {
-                System.out.println("Feature not implemented yet");
-                return States.WELCOME;
+                return States.FORGET;
             }
             default -> {
-                System.out.println("Enter value between 1-2");
+                System.out.println("Enter value between 1-3");
                 return States.WELCOME;
             }
         }

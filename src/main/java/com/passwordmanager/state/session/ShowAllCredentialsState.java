@@ -7,7 +7,6 @@ import com.passwordmanager.ViewMode;
 import com.passwordmanager.dto.CredentialSummary;
 import com.passwordmanager.state.State;
 import com.passwordmanager.state.States;
-import com.passwordmanager.usercredentials.CredentialFormatter;
 import com.passwordmanager.usercredentials.UserCredentialsService;
 
 import java.util.List;

@@ -7,6 +7,7 @@ public class Context {
     private final InputUtil inputUtil=new InputUtil();
     private final Terminal terminal=new Terminal();
     private CurrentUser currentUser;
+    private ForgetPasswordSession forgetPasswordSession;
 
     public InputUtil getInputUtil(){
         return inputUtil;
@@ -24,10 +25,26 @@ public class Context {
         return currentUser;
     }
 
+    public void setForgetPasswordSession(ForgetPasswordSession forgetPasswordSession){
+        this.forgetPasswordSession=forgetPasswordSession;
+    }
+
+    public ForgetPasswordSession getForgetPasswordSession(){
+        return forgetPasswordSession;
+    }
+
     public void logOut(){
         if(currentUser!=null) {
             currentUser.destroy();
             currentUser=null;
         }
+        if(forgetPasswordSession!=null) {
+            forgetPasswordSession.destroy();
+            deleteForgetPasswordSession();
+        }
+    }
+
+    public void deleteForgetPasswordSession(){
+        forgetPasswordSession=null;
     }
 }

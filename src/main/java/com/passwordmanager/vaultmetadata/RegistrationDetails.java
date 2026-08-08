@@ -10,13 +10,17 @@ public class RegistrationDetails {
     private final byte[] encryptionSalt;
     private final byte[] encryptedDataKey;
     private final byte[] dataKeyIV;
+    private final byte[] encryptedDataKeyRecovery;
+    private final byte[] dataKeyIVRecovery;
 
-    public RegistrationDetails(byte[] verificationSecretKey, byte[] verificationSalt, byte[] encryptedDataKey, byte[] encryptionSalt, byte[] dataKeyIV){
+    public RegistrationDetails(byte[] verificationSecretKey, byte[] verificationSalt, byte[] encryptedDataKey, byte[] encryptionSalt, byte[] dataKeyIV, byte[] encryptedDataKeyRecovery, byte[] dataKeyIVRecovery){
         this.verificationSecretKey=verificationSecretKey;
         this.verificationSalt=verificationSalt;
         this.encryptedDataKey=encryptedDataKey;
         this.encryptionSalt=encryptionSalt;
         this.dataKeyIV=dataKeyIV;
+        this.encryptedDataKeyRecovery=encryptedDataKeyRecovery;
+        this.dataKeyIVRecovery=dataKeyIVRecovery;
     }
 
     public byte[] getVerificationSalt(){
@@ -37,6 +41,14 @@ public class RegistrationDetails {
 
     public byte[] getDataKeyIV(){
         return dataKeyIV;
+    }
+
+    public byte[] getEncryptedDataKeyRecovery(){
+        return encryptedDataKeyRecovery;
+    }
+
+    public byte[] getDataKeyIVRecovery(){
+        return dataKeyIVRecovery;
     }
 
 }

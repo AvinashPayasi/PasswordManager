@@ -2,6 +2,7 @@ package com.passwordmanager.state;
 
 import com.passwordmanager.Context;
 import com.passwordmanager.dto.RegistrationRequest;
+import com.passwordmanager.usercredentials.ConsoleFormatter;
 import com.passwordmanager.vaultmetadata.VaultService;
 
 public class RegisterState implements State{
@@ -26,8 +27,10 @@ public class RegisterState implements State{
         byte[] password=context.getTerminal().readPasswordBytes();
         System.out.print("Confirm password: ");
         byte[] confirmPassword=context.getTerminal().readPasswordBytes();
-        vaultService.registerUser(new RegistrationRequest(email, password, confirmPassword));
+        String displayKey=vaultService.registerUser(new RegistrationRequest(email, password, confirmPassword));
         System.out.println("User registered successfully");
+        ConsoleFormatter.formatDisplayKey(displayKey);
+        context.getInputUtil().readSavedRecoveryKey();
         return States.WELCOME;
     }
 }

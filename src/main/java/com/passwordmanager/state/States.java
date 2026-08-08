@@ -5,6 +5,7 @@ public enum States {
     LOGIN,
     REGISTER,
     WELCOME,
+    FORGET,
     ADD_CREDENTIAL,
     SEARCH_CREDENTIAL,
     SHOW_ALL_CREDENTIALS,

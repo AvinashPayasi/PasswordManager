@@ -27,7 +27,7 @@ public class VaultService {
         this.handler=handler;
     }
 
-    public void registerUser(RegistrationRequest registrationRequest){
+    public String registerUser(RegistrationRequest registrationRequest){
         if(!Arrays.equals(registrationRequest.getPassword(),registrationRequest.getConfirmPassword())){
             throw new PasswordMismatchException("Password didn't match. Try again");
         }
@@ -38,8 +38,11 @@ public class VaultService {
             if (vaultRepo.checkUser(connection,registrationRequest.getEmail())) {
                 throw new UserAlreadyExistsException("Email already registered, try login instead");
             }
-            RegistrationDetails registrationDetails = cryptoService.getVaultMetaData(registrationRequest.getEmail(), registrationRequest.getPassword());
+            byte[] recoveryKey=cryptoService.genDataKey();
+            byte[] dataKey=cryptoService.genDataKey();
+            RegistrationDetails registrationDetails = cryptoService.createVaultMetaData(registrationRequest.getPassword(), dataKey ,recoveryKey);
             saveVaultMetaData(connection, registrationRequest.getEmail(), registrationDetails);
+            return formatRecoveryKey(recoveryKey);
         }catch (SQLException sqlException){
             throw handler.translate(sqlException);
         }
@@ -105,4 +108,46 @@ public class VaultService {
         context.setCurrentUser(new CurrentUser(userId, dataKey));
     }
 
+    public String formatRecoveryKey(byte[] recoveryKey){
+        String formattedRecoveryKey= RecoveryKeyFormatter.formatRecoveryKey(recoveryKey);
+        Arrays.fill(recoveryKey, (byte)0);
+        return formattedRecoveryKey;
+    }
+
+    public void verifyEmail(String email){
+        try(Connection connection=DatabaseConfig.getConnection()) {
+            UUID userID = vaultRepo.getUserID(connection, email);
+            context.setForgetPasswordSession(new ForgetPasswordSession(userID, email));
+        }catch (SQLException sqlException){
+            throw handler.translate(sqlException);
+        }
+    }
+
+    public void recoverDataKey(String displayKey) {
+        byte[] recoveryKey=RecoveryKeyFormatter.parseRecoveryKey(displayKey);
+        try(Connection connection = DatabaseConfig.getConnection()) {
+            DataBlock recoveryData=vaultRepo.fetchDataBlock(connection, context.getForgetPasswordSession().getUserID());
+            verifyRecoveryKey(recoveryKey, recoveryData);
+        }catch (SQLException sqlException){
+            throw handler.translate(sqlException);
+        }
+    }
+
+    private void verifyRecoveryKey(byte[] recoveryKey, DataBlock recoveryData){
+        byte[] dataKey=cryptoService.decryptData(recoveryKey, recoveryData);
+        context.getForgetPasswordSession().setDataKey(dataKey);
+    }
+
+    public String setupNewPassword(byte[] password) {
+        byte[] recoveryKey=cryptoService.genDataKey();
+        RegistrationDetails registrationDetails=cryptoService.createVaultMetaData(password, context.getForgetPasswordSession().getDataKey(), recoveryKey);
+        try(Connection connection=DatabaseConfig.getConnection()){
+            vaultRepo.updateUser(connection,context.getForgetPasswordSession().getUserID(), registrationDetails);
+            connection.commit();
+            context.getForgetPasswordSession().destroy();
+            return formatRecoveryKey(recoveryKey);
+        }catch (SQLException sqlException){
+            throw handler.translate(sqlException);
+        }
+    }
 }

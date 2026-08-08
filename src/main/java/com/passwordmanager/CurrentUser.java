@@ -35,13 +35,11 @@ public class CurrentUser {
         return true;
     }
 
-    private void deleteCredentials(){
-        Arrays.fill(dataKey, (byte)0);
-    }
-
     public void destroy(){
-        deleteCredentials();
-        this.dataKey=null;
+        if(dataKey!=null){
+            Arrays.fill(dataKey, (byte)0);
+            this.dataKey=null;
+        }
         this.userId=null;
     }
 }

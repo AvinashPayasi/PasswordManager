@@ -8,11 +8,11 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class CredentialFormatter {
+public class ConsoleFormatter {
 
-    private final DateTimeFormatter dateTimeFormatter=DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm z").withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter dateTimeFormatter=DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm z").withZone(ZoneId.systemDefault());
 
-    public void formatCredentialsList(List<CredentialSummary> credentials){
+    public static void formatCredentialsList(List<CredentialSummary> credentials){
 
         System.out.println("No.  website          username        email           keyword");
         System.out.println("--------------------------------------------------------------------------");
@@ -22,7 +22,7 @@ public class CredentialFormatter {
         }
     }
 
-    public void formatCredential(CredentialResponse credentialResponse){
+    public static void formatCredential(CredentialResponse credentialResponse){
         System.out.println("--"+credentialResponse.getWebsite()+"--------------------------");
         System.out.print("Username: ");
         if(credentialResponse.getUsername()!=null) {
@@ -42,7 +42,7 @@ public class CredentialFormatter {
         System.out.println();
     }
 
-    public void formatCredentialWithPassword(CredentialResponse credentialResponse, byte[] password, Terminal terminal){
+    public static void formatCredentialWithPassword(CredentialResponse credentialResponse, byte[] password, Terminal terminal){
         System.out.println("\033[?1049h");
         System.out.println("--"+credentialResponse.getWebsite()+"--------------------------");
         System.out.print("Username: ");
@@ -62,7 +62,31 @@ public class CredentialFormatter {
         }
         System.out.println();
         System.out.print("Press [enter] to continue: ");
-
     }
 
+    public static void formatDisplayKey(String displayKey) {
+        System.out.println("\033[?1049h");
+        System.out.println("""
+                ========================================================
+                                    RECOVERY KEY
+                ========================================================
+                
+                """
+                +
+                displayKey
+                +"\n"+
+                """
+                
+                IMPORTANT:
+                • This key will only be shown during this registration.
+                • It can be used to recover your vault if you forget
+                  your Master Password.
+                • Without your Master Password or this Recovery Key,
+                  your data cannot be recovered.
+                
+                Type ':saved' after you have securely stored your
+                Recovery Key.
+                
+                """);
+    }
 }

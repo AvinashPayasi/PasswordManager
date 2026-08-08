@@ -1,7 +1,5 @@
 package com.passwordmanager.cryptography;
 
-import com.passwordmanager.DataBlock;
-import com.passwordmanager.vaultmetadata.RegistrationDetails;
 import com.passwordmanager.vaultmetadata.VaultService;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
@@ -10,10 +8,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.UUID;
 import static org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_VERSION_13;
 
 class CryptoUtil {
@@ -21,10 +16,6 @@ class CryptoUtil {
     private VaultService vaultService;
 
     public CryptoUtil(){}
-
-    /*public CryptoUtil(VaultService vaultService){
-        this.vaultService = vaultService;
-    }*/
 
     protected byte[] genSalt() {
         byte[] salt = new byte[32];
@@ -41,32 +32,6 @@ class CryptoUtil {
         return secretKey;
     }
 
-    public boolean verifyMasterPassword(byte[] masterPassword,byte[] verificationSalt,byte[] verificationSecretKey){
-        byte[] tempSecretKey= genSecretKey(masterPassword,verificationSalt);
-        Arrays.fill(verificationSalt,(byte)0);
-        boolean result=MessageDigest.isEqual(tempSecretKey,verificationSecretKey);
-        Arrays.fill(tempSecretKey,(byte)0);
-        Arrays.fill(verificationSecretKey,(byte)0);
-        return result;
-    }
-
-    /*public DataBlock startEncryption(byte[] plainText){
-        byte[] iv=genIV();
-        byte[] cipherText=encryptData(new byte[16]*//*DataKey.getDataKey()*//*,plainText,iv);
-        DataBlock dataBlock=new DataBlock(cipherText, iv);
-        return dataBlock;
-    }*/
-
-            /*private byte[] deriveSecretKey(byte[] key,byte[] salt,byte[] info){
-                Digest digest=new SHA256Digest();
-                HKDFBytesGenerator hkdf=new HKDFBytesGenerator(digest);
-                HKDFParameters parameters=new HKDFParameters(key,salt,info);
-                hkdf.init(parameters);
-                byte[] derivedKey=new byte[32];
-                hkdf.generateBytes(derivedKey,0,32);
-                return derivedKey;
-            }*/
-
     protected byte[] genDataKey(){
         byte[] dataKey=new byte[32];
         secureRandom.nextBytes(dataKey);
@@ -82,12 +47,6 @@ class CryptoUtil {
         byte[] iv=new byte[12];
         secureRandom.nextBytes(iv);
         return iv;
-    }
-
-    public String genInfo(){
-        UUID uuid=UUID.randomUUID();
-        String info="Encryption"+uuid;
-        return info;
     }
 
     private Argon2Parameters.Builder getArgon2Builder(byte[] salt){
@@ -117,9 +76,5 @@ class CryptoUtil {
         data = cipher.doFinal(encryptedData);
         return data;
     }
-
-    /*public void startSession(RegistrationDetails vaultMetaData){
-        vaultMetaData.getEncryptionSalt();
-    }*/
 
 }

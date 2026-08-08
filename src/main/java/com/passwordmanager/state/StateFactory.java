@@ -23,6 +23,7 @@ public class StateFactory {
     private AddCredentialState addCredentialState;
     private SearchCredentialState searchCredentialState;
     private ShowAllCredentialsState showAllCredentialsState;
+    private ForgetPassState forgetPassState;
 
     public StateFactory(Context context, VaultService vaultService, UserCredentialsService userCredentialsService, CredentialExplorer credentialExplorer){
         this.context=context;
@@ -78,5 +79,12 @@ public class StateFactory {
             showAllCredentialsState=new ShowAllCredentialsState(context, userCredentialsService, credentialExplorer);
         }
         return showAllCredentialsState;
+    }
+
+    public ForgetPassState getForgetPassState(){
+        if(forgetPassState==null){
+            forgetPassState=new ForgetPassState(context, vaultService);
+        }
+        return forgetPassState;
     }
 }

@@ -27,7 +27,6 @@ public class LogInState implements State{
         System.out.print("Password: ");
         byte[] password=context.getTerminal().readPasswordBytes();
         vaultService.logInUser(new LogInRequest(email, password));
-        System.out.println("Currently working on this");
         return States.HOME;
     }
 

@@ -3,8 +3,10 @@ package com.passwordmanager.cryptography;
 import com.passwordmanager.CurrentUserDetails;
 import com.passwordmanager.DataBlock;
 import com.passwordmanager.exceptions.InternalServerError;
+import com.passwordmanager.exceptions.InvalidRecoveryKeyException;
 import com.passwordmanager.vaultmetadata.RegistrationDetails;
 
+import javax.crypto.AEADBadTagException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
@@ -15,20 +17,25 @@ public class CryptoService {
         return cryptoUtil.genSecretKey(key, salt);
     }
 
-    public RegistrationDetails getVaultMetaData(String email, byte[] password){
+    public RegistrationDetails createVaultMetaData(byte[] password, byte[] dataKey, byte[] recoveryKey){
         byte[] verificationSalt=cryptoUtil.genSalt();
         byte[] encryptionSalt =cryptoUtil.genSalt();
         byte[] verificationSecretKey = cryptoUtil.genSecretKey(password,verificationSalt);
         byte[] masterKey=cryptoUtil.genSecretKey(password,encryptionSalt);
         byte[] dataKeyIV=cryptoUtil.genIV();
-        byte[] dataKey=cryptoUtil.genDataKey();
+        byte[] dataKeyIVRecovery=cryptoUtil.genIV();
         try {
             byte[] encryptedDataKey = cryptoUtil.encryptData(masterKey, dataKey, dataKeyIV);
-            RegistrationDetails registrationDetails = new RegistrationDetails(verificationSecretKey, verificationSalt, encryptedDataKey, encryptionSalt, dataKeyIV);
+            byte[] encryptedDataKeyRecovery = cryptoUtil.encryptData(recoveryKey, dataKey, dataKeyIVRecovery);
+            RegistrationDetails registrationDetails = new RegistrationDetails(verificationSecretKey, verificationSalt, encryptedDataKey, encryptionSalt, dataKeyIV, encryptedDataKeyRecovery, dataKeyIVRecovery);
             return registrationDetails;
         }catch (GeneralSecurityException generalSecurityException){
             throw new InternalServerError("Something went wrong");
         }
+    }
+
+    public byte[] genDataKey(){
+        return cryptoUtil.genDataKey();
     }
 
     public byte[] getDataKey(byte[] password, CurrentUserDetails currentUserDetails){
@@ -60,8 +67,13 @@ public class CryptoService {
             byte[] iv = dataBlock.getIV();
             byte[] password=cryptoUtil.decryptData(key, encryptedData, iv);
             return password;
+        }catch (AEADBadTagException aeadBadTagException){
+            throw new InvalidRecoveryKeyException("Invalid Recovery Key");
         }catch (GeneralSecurityException generalSecurityException){
             throw new InternalServerError("Something went wrong");
+        }finally {
+            Arrays.fill(key,(byte)0);
         }
     }
+
 }
