@@ -37,14 +37,13 @@ public class CredentialExplorer {
 
                 case CREDENTIAL_LIST -> {
                     displayCredentialList();
-                    fetchCredential(credentialSession.getCurrentCredentialID());
+                    fetchCredential(this.credentialSession.getCurrentCredentialID());
                 }
             }
         }
     }
 
     private void displayCredentialList(){
-        credentialSession.getCredentials();
         ConsoleFormatter.formatCredentialsList(credentialSession.getCredentials());
         selectCredentialID();
     }
@@ -91,7 +90,6 @@ public class CredentialExplorer {
             } catch (NumberFormatException numberFormatException) {
                 System.out.println("Enter digits only");
             } catch (BackCommandException backCommandException) {
-                System.out.println("HII THERE");
                 view = CredentialView.CREDENTIAL_LIST;
                 break;
             }
