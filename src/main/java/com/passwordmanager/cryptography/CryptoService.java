@@ -71,9 +71,9 @@ public class CryptoService {
             throw new InvalidRecoveryKeyException("Invalid Recovery Key");
         }catch (GeneralSecurityException generalSecurityException){
             throw new InternalServerError("Something went wrong");
-        }finally {
-            Arrays.fill(key,(byte)0);
-        }
+        }/*finally {
+            Arrays.fill(key,(byte)0); //Causing Invalid Recovery Key Bug
+        }*/
     }
 
 }
